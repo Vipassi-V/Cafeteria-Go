@@ -102,21 +102,21 @@ export default function CheckoutScreen() {
         <Text className="text-gray-400 font-bold mb-4 uppercase tracking-widest text-xs">Select Pickup Time</Text>
         <View className="flex-row flex-wrap">
           {timeSlots.map((slot: string) => (
-            <TouchableOpacity 
+            <TouchableOpacity
               key={slot}
               onPress={() => setSelectedTime(slot)}
               className={`mr-3 mb-3 px-6 py-3 rounded-2xl border ${selectedTime === slot ? 'bg-primary border-primary' : 'bg-white/5 border-white/10'}`}
             >
               <Text className={`font-bold ${selectedTime === slot ? 'text-white' : 'text-gray-400'}`}>{slot}</Text>
             </TouchableOpacity>
-          )}
+          ))}
         </View>
       </View>
 
       {/* 3. Payment Section */}
       <View className="bg-white/5 border border-white/10 p-6 rounded-3xl mb-6">
         <Text className="text-gray-400 font-bold mb-4 uppercase tracking-widest text-xs">Payment Information</Text>
-        
+
         <View className="items-center mb-4">
           {/* Admin QR Code display */}
           <View className="bg-white p-2 rounded-2xl mb-4 w-48 h-48 items-center justify-center">
@@ -129,8 +129,8 @@ export default function CheckoutScreen() {
               </View>
             )}
           </View>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={handleCopyAmount}
             className="flex-row items-center bg-primary/20 px-4 py-2 rounded-xl mb-4"
           >
@@ -139,7 +139,7 @@ export default function CheckoutScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={pickImage}
           className={`w-full py-12 rounded-3xl border-2 border-dashed items-center justify-center ${screenshot ? 'border-primary bg-primary/5' : 'border-white/10'}`}
         >
@@ -158,7 +158,7 @@ export default function CheckoutScreen() {
       </View>
 
       {/* Place Order Button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         onPress={handlePlaceOrder}
         disabled={loading}
         activeOpacity={0.8}
