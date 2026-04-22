@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, SafeAreaView, ActivityIndicator, Image } from 'react-native';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { socket } from '../../lib/socket';
 import { useAuth } from '../../context/AuthContext';
 import axios from 'axios';
@@ -10,45 +10,31 @@ import * as Haptics from 'expo-haptics';
 export default function AdminDashboard() {
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   
   const { user, session, signOut } = useAuth();
+
+  // 1. Initialize the new Expo Audio Player
+  const player = useAudioPlayer(require('../../assets/sounds/notification.wav'));
 
   useEffect(() => {
     fetchOrders();
 
-    // 1. Listen for new orders in real-time
+    // 2. Listen for new orders in real-time
     socket.on('new_order', (newOrder) => {
       setOrders(prev => [newOrder, ...prev]);
-      playNotificationSound();
+      
+      // Play sound using the new stable API
+      if (player) {
+        player.play();
+      }
+      
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     });
 
-    // 2. Load the sound asset once
-    loadSound();
-
     return () => {
       socket.off('new_order');
-      if (sound) sound.unloadAsync();
     };
-  }, []);
-
-  const loadSound = async () => {
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require('../../assets/sounds/notification.wav')
-      );
-      setSound(sound);
-    } catch (err) {
-      console.error('Failed to load sound', err);
-    }
-  };
-
-  const playNotificationSound = async () => {
-    if (sound) {
-      await sound.replayAsync();
-    }
-  };
+  }, [player]);
 
   const fetchOrders = async () => {
     try {
@@ -125,7 +111,7 @@ export default function AdminDashboard() {
               ))}
             </View>
 
-            {/* Actions: ONLY Accept and Ready (No Cancel as per user rule) */}
+            {/* Actions */}
             <View className="flex-row space-x-3">
               {item.status === 'pending' && (
                 <TouchableOpacity 
